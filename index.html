@@ -1,393 +1,379 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KAS ALIUNG</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keuangan Dashboard</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #141e30, #243b55);
-      color: #fff;
-    }
-    a { color: inherit; text-decoration: none; }
-    button, input, select {
-      font-family: inherit;
-    }
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 5px #ffffff80, 0 0 10px #ffffff40; }
-      50% { box-shadow: 0 0 15px #ffffffaa, 0 0 30px #ffffff80; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #0d0d0d; color: white; overflow: hidden; }
+
+    /* Background Stars Animation */
+    canvas#stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
     }
 
-    .login-wrapper {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100vh;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
+    /* Login Screen */
+    .login-container {
       display: flex;
-      align-items: center;
       justify-content: center;
-      z-index: 999;
+      align-items: center;
+      height: 100vh;
     }
     .login-box {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 2rem;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 350px;
-      animation: glow 2s infinite alternate;
-      box-shadow: 0 0 25px rgba(255,255,255,0.15);
-    }
-    .login-box h2 {
-      margin-bottom: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 10px;
+      border: 2px solid #555;
+      box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.1);
+      width: 300px;
       text-align: center;
-      color: #fff;
+      animation: glow 1s infinite alternate;
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 15px white; }
+      to { box-shadow: 0 0 30px white; }
     }
     .login-box input {
+      display: block;
       width: 100%;
-      margin-bottom: 1rem;
-      padding: 0.75rem;
-      border: 2px solid #ffffff40;
+      padding: 12px;
+      margin: 15px 0;
       background: transparent;
-      color: #fff;
-      border-radius: 10px;
-    }
-    .login-box input:focus {
+      border: 2px solid #555;
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
       outline: none;
-      border-color: #fff;
     }
     .login-box button {
-      width: 100%;
-      padding: 0.75rem;
-      background: #00c896;
+      padding: 12px 30px;
+      background: #ff4081;
       border: none;
-      border-radius: 10px;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .login-box button:hover {
-      background: #00e6a5;
-    }
-
-    #main-content {
-      display: none;
-      padding: 0;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-    }
-
-    .sidebar {
-      width: 220px;
-      background: #1c1c1c;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      border-right: 1px solid #444;
-    }
-    .sidebar img {
-      height: 50px;
-      margin-bottom: 1rem;
-    }
-    .sidebar button {
-      background: #292929;
-      color: #fff;
-      border: none;
-      padding: 0.75rem;
+      color: white;
       border-radius: 8px;
-      text-align: left;
+      font-size: 18px;
+      cursor: pointer;
       transition: background 0.3s;
     }
-    .sidebar button:hover {
-      background: #00c896;
-      color: #000;
+    .login-box button:hover {
+      background: #f50057;
     }
 
+    /* Dashboard Layout */
+    .app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+    .sidebar {
+      width: 250px;
+      background: #121212;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .sidebar img {
+      width: 220px;
+      margin-bottom: 30px;
+    }
+    .menu-item {
+      background: #222;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.3s;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .menu-item:hover {
+      background: #333;
+    }
     .content {
       flex: 1;
-      padding: 2rem;
+      padding: 40px;
+      overflow-y: auto;
+      max-height: 100vh;
     }
 
-    .dashboard {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
+    /* Cards */
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
     }
     .card {
-      flex: 1 1 250px;
-      background: #2c2c2c;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #00000044;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid #555;
+      padding: 20px;
+      border-radius: 15px;
       text-align: center;
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: scale(1.05);
     }
     .card h3 {
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-      color: #00e6a5;
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: #ff4081;
     }
     .card p {
-      font-size: 1.4rem;
+      font-size: 2rem;
       font-weight: bold;
+      color: white;
     }
 
-    .form-section {
-      max-width: 500px;
-      background: #1a1a1a;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #00000044;
-    }
-    .form-input {
-      margin-bottom: 1rem;
-    }
-    .form-input label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .form-input input {
+    /* Form and Table */
+    #inputForm, #transactionTable {
+      margin-top: 30px;
       width: 100%;
-      padding: 0.75rem;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #111;
-      color: #fff;
     }
-    .form-section button {
-      background: #00c896;
-      padding: 0.75rem 2rem;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #000;
-    }
-    .form-section button:hover {
-      background: #00e6a5;
-    }
-
     table {
       width: 100%;
+      margin-top: 20px;
       border-collapse: collapse;
-      margin-top: 2rem;
     }
     th, td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid #333;
+      padding: 12px;
+      border: 1px solid #444;
+      text-align: center;
     }
-
-    .section { display: none; }
-    .section.active { display: block; }
+    button.edit-btn, button.delete-btn {
+      padding: 8px 15px;
+      border: none;
+      background: #ff4081;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button.edit-btn:hover, button.delete-btn:hover {
+      background: #f50057;
+    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <div class="login-wrapper" id="login-screen">
-    <div class="login-box">
-      <h2>Masuk Dashboard</h2>
-      <input type="text" id="username" placeholder="Username" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
+<canvas id="stars"></canvas>
+
+<!-- Login Page -->
+<div class="login-container" id="loginPage">
+  <div class="login-box">
+    <h2>Login Dashboard</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="checkLogin()">LOGIN</button>
+  </div>
+</div>
+
+<!-- Dashboard Page -->
+<div class="app hidden" id="dashboardPage">
+  <div class="sidebar">
+    <img src="https://i.ibb.co/zh20nRLy/DASHBOARD-ALIUNG.gif" alt="Logo Aliung" />
+    <div class="menu-item" onclick="showSection('dashboard')">DASHBOARD</div>
+    <div class="menu-item" onclick="showSection('input')">INPUT DATA</div>
+    <div class="menu-item">HISTORY TRANSAKSI</div>
+    <div class="menu-item">EXPORT DATA TRANSAKSI</div>
+    <div class="menu-item">PENGATURAN</div>
+    <div class="menu-item" onclick="logoutConfirm()">LOGOUT</div>
+  </div>
+  <div class="content">
+    <div id="section-dashboard">
+      <h1>DASHBOARD</h1>
+      <div class="dashboard-cards">
+        <div class="card">
+          <h3>DANA MASUK</h3>
+          <p id="totalIn">Rp 0</p>
+        </div>
+        <div class="card">
+          <h3>DANA KELUAR</h3>
+          <p id="totalOut">Rp 0</p>
+        </div>
+        <div class="card">
+          <h3>TOTAL BALANCE</h3>
+          <p id="balance">Rp 0</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="section-input" class="hidden">
+      <h1>INPUT DATA</h1>
+      <form id="inputForm">
+        <input type="text" id="desc" placeholder="Deskripsi" required />
+        <input type="number" id="amount" placeholder="Jumlah (Rp)" required />
+        <select id="type">
+          <option value="masuk">DANA MASUK</option>
+          <option value="keluar">DANA KELUAR</option>
+        </select>
+        <button type="submit">SAVE DATA</button>
+      </form>
+      <table id="transactionTable">
+        <thead>
+          <tr>
+            <th>WAKTU</th>
+            <th>DESKRIPSI</th>
+            <th>JUMLAH</th>
+            <th>JENIS</th>
+            <th>AKSI</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
+</div>
 
-  <div id="main-content">
-    <div class="sidebar">
-      <img src="https://i.ibb.co/zh20nRLy/DASHBOARD-ALIUNG.gif" alt="Logo" />
-      <button onclick="showSection('dashboard')">DASHBOARD</button>
-      <button onclick="showSection('input')">INPUT DATA</button>
-      <button onclick="showSection('history')">HISTORY TRANSAKSI</button>
-      <button onclick="showSection('export')">EXPORT DATA</button>
-      <button onclick="showSection('pengaturan')">PENGATURAN</button>
-      <button onclick="logout()">LOGOUT</button>
-    </div>
-    <div class="content">
-      <section id="dashboard" class="section active">
-        <div class="dashboard">
-          <div class="card">
-            <h3>Total Dana Masuk</h3>
-            <p id="totalMasuk">Rp.0</p>
-          </div>
-          <div class="card">
-            <h3>Total Dana Keluar</h3>
-            <p id="totalKeluar">Rp.0</p>
-          </div>
-          <div class="card">
-            <h3>Total Saldo</h3>
-            <p id="totalSaldo">Rp.0</p>
-          </div>
-        </div>
-      </section>
-      <section id="input" class="section">
-        <div class="form-section">
-          <div class="form-input">
-            <label>Tanggal</label>
-            <input type="date" id="tanggal" />
-          </div>
-          <div class="form-input">
-            <label>Deskripsi</label>
-            <input type="text" id="deskripsi" placeholder="Contoh: Gaji, Belanja, dll" />
-          </div>
-          <div class="form-input">
-            <label>Dana Masuk</label>
-            <input type="number" id="masuk" />
-          </div>
-          <div class="form-input">
-            <label>Dana Keluar</label>
-            <input type="number" id="keluar" />
-          </div>
-          <button onclick="simpanData()">SIMPAN DATA</button>
-        </div>
-        <table id="dataTable">
-          <thead>
-            <tr>
-              <th>Tanggal & Jam</th>
-              <th>Deskripsi</th>
-              <th>Masuk</th>
-              <th>Keluar</th>
-              <th>Saldo</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </section>
-      <section id="history" class="section">
-        <h3>Riwayat Aktivitas</h3>
-        <ul id="historyList"></ul>
-      </section>
-      <section id="export" class="section">
-        <button onclick="alert('Export ke Excel dalam pengembangan.')">Download Excel</button>
-      </section>
-      <section id="pengaturan" class="section">
-        <p>Fitur pengaturan akan dikembangkan lebih lanjut.</p>
-      </section>
-    </div>
-  </div>
+<script>
+  const users = { "aliung": "company209" };
+  let transactions = [];
+  let currentUser = null;
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app);
+  // Background animation for stars
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  const stars = [];
 
-    const correctUser = "aliung";
-    const correctPass = "company209";
-    let dataTransaksi = [];
+  class Star {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 1;
+      this.speed = Math.random() * 0.5 + 0.2;
+    }
 
-    function login() {
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
-      if (user === correctUser && pass === correctPass) {
-        document.getElementById("login-screen").style.display = "none";
-        document.getElementById("main-content").style.display = "flex";
-        showSection('dashboard');
-        renderTable();
-        updateDashboard();
-        logHistory("LOGIN");
+    update() {
+      this.y += this.speed;
+      if (this.y > canvas.height) {
+        this.y = 0;
+        this.x = Math.random() * canvas.width;
+      }
+    }
+
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+    }
+  }
+
+  function createStars() {
+    for (let i = 0; i < 500; i++) {
+      stars.push(new Star());
+    }
+  }
+
+  function animateStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(star => {
+      star.update();
+      star.draw();
+    });
+    requestAnimationFrame(animateStars);
+  }
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  createStars();
+  animateStars();
+
+  // Login and Dashboard functions
+  function checkLogin() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (users[username] === password) {
+      currentUser = username;
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('dashboardPage').classList.remove('hidden');
+      showSection('dashboard');
+    } else {
+      alert('Username atau password salah');
+    }
+  }
+
+  function showSection(section) {
+    document.querySelectorAll('.content > div').forEach(div => div.classList.add('hidden'));
+    document.getElementById(`section-${section}`).classList.remove('hidden');
+  }
+
+  function logoutConfirm() {
+    if (confirm('Apakah Anda yakin ingin keluar?')) {
+      currentUser = null;
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('dashboardPage').classList.add('hidden');
+    }
+  }
+
+  // Transaction handling functions
+  document.getElementById('inputForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const desc = document.getElementById('desc').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    const type = document.getElementById('type').value;
+
+    transactions.push({ desc, amount, type, date: new Date().toLocaleString() });
+    updateTransactionTable();
+    updateDashboard();
+    document.getElementById('desc').value = '';
+    document.getElementById('amount').value = '';
+  });
+
+  function updateTransactionTable() {
+    const tbody = document.querySelector('#transactionTable tbody');
+    tbody.innerHTML = '';
+    transactions.forEach((transaction, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${transaction.date}</td>
+        <td>${transaction.desc}</td>
+        <td>Rp ${transaction.amount.toFixed(2)}</td>
+        <td>${transaction.type === 'masuk' ? 'DANA MASUK' : 'DANA KELUAR'}</td>
+        <td><button class="edit-btn" onclick="editTransaction(${index})">Edit</button><button class="delete-btn" onclick="deleteTransaction(${index})">Delete</button></td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function deleteTransaction(index) {
+    transactions.splice(index, 1);
+    updateTransactionTable();
+    updateDashboard();
+  }
+
+  function editTransaction(index) {
+    const transaction = transactions[index];
+    document.getElementById('desc').value = transaction.desc;
+    document.getElementById('amount').value = transaction.amount;
+    document.getElementById('type').value = transaction.type;
+    deleteTransaction(index);
+  }
+
+  function updateDashboard() {
+    let totalIn = 0;
+    let totalOut = 0;
+    transactions.forEach(transaction => {
+      if (transaction.type === 'masuk') {
+        totalIn += transaction.amount;
       } else {
-        alert("Username atau password salah");
+        totalOut += transaction.amount;
       }
-    }
+    });
+    const balance = totalIn - totalOut;
 
-    function logout() {
-      if (confirm("Yakin ingin logout?")) {
-        logHistory("LOGOUT");
-        location.reload();
-      }
-    }
-
-    function showSection(id) {
-      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      if (id === 'history') renderHistory();
-    }
-
-    function simpanData() {
-      const tanggal = document.getElementById("tanggal").value;
-      const deskripsi = document.getElementById("deskripsi").value;
-      const masuk = parseInt(document.getElementById("masuk").value) || 0;
-      const keluar = parseInt(document.getElementById("keluar").value) || 0;
-      const waktu = new Date().toLocaleString();
-      const saldo = hitungSaldo() + masuk - keluar;
-
-      const newTransaction = { tanggal: waktu, deskripsi, masuk, keluar, saldo };
-      const newRef = database.ref("transaksi").push();
-      newRef.set(newTransaction);
-
-      dataTransaksi.push(newTransaction);
-      renderTable();
-      updateDashboard();
-      logHistory("INPUT: " + deskripsi);
-      alert("DATA BERHASIL DI SIMPAN");
-    }
-
-    function hitungSaldo() {
-      return dataTransaksi.reduce((acc, val) => acc + val.masuk - val.keluar, 0);
-    }
-
-    function renderTable() {
-      const tbody = document.querySelector("#dataTable tbody");
-      tbody.innerHTML = "";
-      dataTransaksi.forEach(item => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${item.tanggal}</td>
-          <td>${item.deskripsi}</td>
-          <td>${formatRupiah(item.masuk)}</td>
-          <td>${formatRupiah(item.keluar)}</td>
-          <td>${formatRupiah(item.saldo)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function formatRupiah(angka) {
-      return "Rp " + angka.toLocaleString('id-ID');
-    }
-
-    function updateDashboard() {
-      const totalMasuk = dataTransaksi.reduce((acc, val) => acc + val.masuk, 0);
-      const totalKeluar = dataTransaksi.reduce((acc, val) => acc + val.keluar, 0);
-      const saldo = totalMasuk - totalKeluar;
-      document.getElementById("totalMasuk").innerText = formatRupiah(totalMasuk);
-      document.getElementById("totalKeluar").innerText = formatRupiah(totalKeluar);
-      document.getElementById("totalSaldo").innerText = formatRupiah(saldo);
-    }
-
-    function logHistory(action) {
-      const historyRef = database.ref("history");
-      historyRef.push({
-        action,
-        timestamp: new Date().toLocaleString(),
-      });
-    }
-
-    function renderHistory() {
-      const historyList = document.getElementById("historyList");
-      historyList.innerHTML = "";
-      const historyRef = database.ref("history");
-      historyRef.once("value", snapshot => {
-        snapshot.forEach(childSnapshot => {
-          const action = childSnapshot.val();
-          const li = document.createElement("li");
-          li.textContent = `${action.timestamp}: ${action.action}`;
-          historyList.appendChild(li);
-        });
-      });
-    }
-  </script>
+    document.getElementById('totalIn').textContent = `Rp ${totalIn.toFixed(2)}`;
+    document.getElementById('totalOut').textContent = `Rp ${totalOut.toFixed(2)}`;
+    document.getElementById('balance').textContent = `Rp ${balance.toFixed(2)}`;
+  }
+</script>
 </body>
 </html>
